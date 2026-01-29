@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <title>FootballTalk</title>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
+// This config matches the footballdiscussion-11812 project
 const firebaseConfig = {
   apiKey: "AIzaSyB2eReZssn4F99io5eXDCjP-5zXD9utvEo",
   authDomain: "footballdiscussion-11812.firebaseapp.com",
@@ -19,66 +19,22 @@ const firebaseConfig = {
   appId: "1:945766912077:web:e8cbcf594331c1d4ea8c04"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 </script>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
-}
-header {
-  background: #1e293b;
-  padding: 15px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-}
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 15px;
-}
-.box {
-  background: #1e293b;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
-input, textarea, select, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  border-radius: 6px;
-  border: none;
-}
-button {
-  background: #2563eb;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-.room {
-  background: #1e293b;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
-.comment {
-  background: #334155;
-  padding: 6px;
-  border-radius: 6px;
-  margin-top: 4px;
-  font-size: 14px;
-}
-.actions span {
-  margin-right: 12px;
-  cursor: pointer;
-}
+body { margin: 0; font-family: Arial, sans-serif; background: #0f172a; color: white; }
+header { background: #1e293b; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
+.container { max-width: 800px; margin: auto; padding: 15px; }
+.box { background: #1e293b; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+input, textarea, select, button { width: 100%; padding: 10px; margin-top: 8px; border-radius: 6px; border: none; box-sizing: border-box; }
+button { background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
+.room { background: #1e293b; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+.comment { background: #334155; padding: 6px; border-radius: 6px; margin-top: 4px; font-size: 14px; }
+.actions span { margin-right: 12px; cursor: pointer; }
 </style>
 </head>
 
@@ -86,39 +42,36 @@ button {
 <header>⚽ FootballTalk</header>
 
 <div class="container">
+  <div id="authBox" class="box">
+    <h3>Login / Signup</h3>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="signup()">Sign Up</button>
+    <button onclick="login()">Login</button>
+  </div>
 
-<div id="authBox" class="box">
-<h3>Login / Signup</h3>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="signup()">Sign Up</button>
-<button onclick="login()">Login</button>
-</div>
-
-<div id="app" style="display:none">
-
-<div class="box">
-<h3>Create Discussion Room</h3>
-<input id="title" placeholder="Room title">
-<select id="category">
-<option>Footballer</option>
-<option>Team</option>
-<option>Competition</option>
-<option>Award</option>
-<option>Controversy</option>
-</select>
-<textarea id="description" placeholder="Discussion text"></textarea>
-<button onclick="createRoom()">Post</button>
-<button onclick="logout()">Logout</button>
-</div>
-
-<div id="rooms"></div>
-
-</div>
+  <div id="app" style="display:none">
+    <div class="box">
+      <h3>Create Discussion Room</h3>
+      <input id="title" placeholder="Room title">
+      <select id="category">
+        <option>Footballer</option>
+        <option>Team</option>
+        <option>Competition</option>
+        <option>Award</option>
+        <option>Controversy</option>
+      </select>
+      <textarea id="description" placeholder="Discussion text"></textarea>
+      <button onclick="createRoom()">Post</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+    <div id="rooms"></div>
+  </div>
 </div>
 
 <script>
-auth.onAuthStateChanged(user=>{
+// Check for user login state
+auth.onAuthStateChanged(user => {
   if(user){
     document.getElementById("authBox").style.display="none";
     document.getElementById("app").style.display="block";
@@ -130,15 +83,17 @@ auth.onAuthStateChanged(user=>{
 });
 
 function signup(){
-  auth.createUserWithEmailAndPassword(
-    email.value, password.value
-  ).catch(e=>alert(e.message));
+  const emailVal = document.getElementById("email").value;
+  const passVal = document.getElementById("password").value;
+  auth.createUserWithEmailAndPassword(emailVal, passVal)
+    .catch(e => alert("Signup Error: " + e.message));
 }
 
 function login(){
-  auth.signInWithEmailAndPassword(
-    email.value, password.value
-  ).catch(e=>alert(e.message));
+  const emailVal = document.getElementById("email").value;
+  const passVal = document.getElementById("password").value;
+  auth.signInWithEmailAndPassword(emailVal, passVal)
+    .catch(e => alert("Login Error: " + e.message));
 }
 
 function logout(){
@@ -147,27 +102,24 @@ function logout(){
 
 function createRoom(){
   db.collection("rooms").add({
-    title: title.value,
-    category: category.value,
-    description: description.value,
+    title: document.getElementById("title").value,
+    category: document.getElementById("category").value,
+    description: document.getElementById("description").value,
     likes: 0,
     dislikes: 0,
-    comments: []
+    comments: [],
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
-  title.value="";
-  description.value="";
+  document.getElementById("title").value="";
+  document.getElementById("description").value="";
 }
 
 function likeRoom(id, likes){
-  db.collection("rooms").doc(id).update({
-    likes: likes + 1
-  });
+  db.collection("rooms").doc(id).update({ likes: likes + 1 });
 }
 
 function dislikeRoom(id, dislikes){
-  db.collection("rooms").doc(id).update({
-    dislikes: dislikes + 1
-  });
+  db.collection("rooms").doc(id).update({ dislikes: dislikes + 1 });
 }
 
 function addComment(id){
@@ -180,31 +132,30 @@ function addComment(id){
 }
 
 function loadRooms(){
-  db.collection("rooms").onSnapshot(snapshot=>{
-    let html="";
-    snapshot.forEach(doc=>{
+  db.collection("rooms").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+    let html = "";
+    snapshot.forEach(doc => {
       let r = doc.data();
       html += `
       <div class="room">
         <h3>${r.title}</h3>
         <small>${r.category}</small>
         <p>${r.description}</p>
-
         <div class="actions">
           <span onclick="likeRoom('${doc.id}', ${r.likes})">👍 ${r.likes}</span>
           <span onclick="dislikeRoom('${doc.id}', ${r.dislikes})">👎 ${r.dislikes}</span>
         </div>
-
         <input id="c${doc.id}" placeholder="Write comment">
         <button onclick="addComment('${doc.id}')">Comment</button>
-        ${(r.comments||[]).map(c=>`<div class="comment">${c}</div>`).join("")}
+        ${(r.comments||[]).map(c => `<div class="comment">${c}</div>`).join("")}
       </div>
       `;
     });
     document.getElementById("rooms").innerHTML = html;
+  }, error => {
+    console.error("Error loading rooms: ", error);
   });
 }
 </script>
-
 </body>
 </html>
